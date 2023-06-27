@@ -1,6 +1,4 @@
-import { fetchCoinHistoricalChartData } from "@/api/api"
-
-const mapCoinCardData = (data) => {
+export const mapCoinCardData = (data) => {
     return data.map(item => ({
         id: item.id,
         symbol: String(item.symbol.toUpperCase()),
@@ -12,21 +10,10 @@ const mapCoinCardData = (data) => {
     }))
 }
 
-export const fetchCoinOverallChartData = async (coinId) => {
-    try {
-      const maximumDays = calculateMaximumDays(); // Calculate the maximum number of days
-      const chartData = await fetchCoinHistoricalChartData(coinId, maximumDays);
-      const overallData = extractOverallData(chartData);
-  
-      return overallData;
-    } catch (error) {
-      console.log('Cannot fetch coin overall data');
-      return [];
-    }
-  };
+
   
   // Function to calculate the maximum number of days from the current date to the date of creation of Bitcoin
-  const calculateMaximumDays = () => {
+ export const calculateMaximumDays = () => {
     const currentDate = new Date();
     const bitcoinCreationDate = new Date('2009-01-03'); // Assuming Bitcoin creation date is January 3, 2009
     const timeDiff = currentDate.getTime() - bitcoinCreationDate.getTime();

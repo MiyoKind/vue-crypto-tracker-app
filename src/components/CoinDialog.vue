@@ -83,32 +83,35 @@ export default {
             this.chart = chart
             this.updateChartData()
         },
-        updateChartData() {
-            const data = this.getDataForActiveTab()
+        async updateChartData() {
+            const data = await this.getDataForActiveTab()
             this.activeData = data
         },
-        getDataForActiveTab() {
+        async getDataForActiveTab() {
             // logic for getting data with certain period of time
             switch (this.activeTab) {
-                case 'daily': return this.dailyChartData
-                case 'weekly': return this.weeklyChartData
-                case 'monthly': return this.monthlyChartData
-                case 'year': return this.yearChartData
-                case 'overall': return this.overallChartData
+                case 'daily':
+                    await this.fetchDailyData(this.coinDetails.id)
+                    return this.dailyChartData
+                case 'weekly':
+                    await this.fetchWeeklyData(this.coinDetails.id)
+                    return this.weeklyChartData
+                case 'monthly':
+                    await this.fetchMonthlyData(this.coinDetails.id)
+                    return this.monthlyChartData
+                case 'year':
+                    await this.fetchYearData(this.coinDetails.id)
+                    return this.yearChartData
+                case 'overall':
+                    await this.fetchOverallData(this.coinDetails.id)
+                    return this.overallChartData
                 default: return []
             }
         }
     },
-    mounted() {
-        const coinId = this.coinDetails.id
-        this.fetchDailyData(coinId)
-        this.fetchWeeklyData(coinId)
-        this.fetchMonthlyData(coinId)
-        this.fetchYearData(coinId)
-        this.fetchOverallData(coinId)
-    },
     watch: {
         activeTab() {
+            console.log(this.activeTab)
             this.updateChartData()
         }
     }

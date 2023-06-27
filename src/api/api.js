@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { calculateMaximumDays, extractOverallData } from '@/service/service';
 
-let lastCalled = 0;
-const MIN_TIME_INTERVAL = 1000; // 1 second
+// let lastCalled = 0;
+// const MIN_TIME_INTERVAL = 1000; // 1 second
 
 /**
  * Function fetching coin list
@@ -9,11 +10,6 @@ const MIN_TIME_INTERVAL = 1000; // 1 second
  */
 export const fetchCoinList = async () => {
   try {
-    const now = new Date().getTime();
-    if (now - lastCalled < MIN_TIME_INTERVAL) {
-      await new Promise((resolve) => setTimeout(() => resolve(), MIN_TIME_INTERVAL));
-    }
-
     const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
       params: {
         vs_currency: 'usd',
@@ -22,10 +18,12 @@ export const fetchCoinList = async () => {
         page: 1,
         sparkline: false
       },
-      withCredentials: false
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
     })
-
-    lastCalled = new Date().getTime();
 
     const coins = response.data
     return coins
@@ -71,26 +69,27 @@ export const fetchCoinDetails = async (id) => {
  */
 export const fetchCoinHistoricalChartData = async (coinId, days) => {
   try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`, {
-      params: {
-        vs_currency: 'usd',
-        days: `${days}`
+    const response = await axios.get(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
+      {
+        params: {
+          vs_currency: 'usd',
+          days: `${days}`
+        }
       }
-    })
+    );
 
-    const chartData = response.data.prices.map(([timeStamp, historicalPrice]) => {
+    const chartData = response.data.prices.map(([timeStamp, historicalPrice]) => ({
       timeStamp,
       historicalPrice
-    })
-    
-    return chartData
-  } catch (error) {
-    console.log('Cannot fetch coin history')
-    return []
-  }
-}
+    }));
 
-// https://min-api.cryptocompare.com/data/news/feeds&api_key={your_api_key}
+    return chartData;
+  } catch (error) {
+    console.log('Cannot fetch coin history');
+    return [];
+  }
+};
 
 /**
  * Function fetching news about cryptocurrencies
@@ -98,7 +97,7 @@ export const fetchCoinHistoricalChartData = async (coinId, days) => {
  */
 export const fetchNews = async () => {
   try {
-    const response = await axios.get('https://min-api.cryptocompare.com/data/news/?api_key=ad0c130fb276923eb22ff24a7d4e7e61b5b4885a34c6774e300160ed104d9231')
+    const response = await axios.get(`https://min-api.cryptocompare.com/data/news/?api_key=${ process.env.CRYPTOCOMPARE_API_KEY }`)
     const news = response.data
     return news
   } catch (error) {
@@ -106,3 +105,16 @@ export const fetchNews = async () => {
     return []
   }
 }
+
+export const fetchCoinOverallChartData = async (coinId) => {
+  try {
+    const maximumDays = calculateMaximumDays(); // Calculate the maximum number of days
+    const chartData = fetchCoinHistoricalChartData(coinId, maximumDays);
+    const overallData = extractOverallData(chartData);
+
+    return overallData;
+  } catch (error) {
+    console.log('Cannot fetch coin overall data');
+    return [];
+  }
+};
