@@ -1,5 +1,5 @@
 <template>
-    <div height="200" ref="chart"></div>
+    <div ref="chart" class="chart-container"></div>
 </template>
 <script>
 import * as am4core from '@amcharts/amcharts4/core'
@@ -16,7 +16,20 @@ export default {
     },
     data() {
         return {
-            chart: null
+            chart: null,
+            chartUpdateTimeout: null
+        }
+    },
+    watch: {
+        chartData: {
+            handler(newVal) {
+                if (Array.isArray(newVal)) {
+                    console.log(newVal);
+                    this.chart.dispose();
+                    this.createChart();
+                }
+            },
+            deep: true
         }
     },
     mounted() {
@@ -37,8 +50,8 @@ export default {
 
             // Create series
             const series = this.chart.series.push(new am4charts.LineSeries());
-            series.dataFields.dateX = 'timestamp';
-            series.dataFields.valueY = 'price';
+            series.dataFields.dateX = 'timeStamp';
+            series.dataFields.valueY = 'historicalPrice';
             series.tooltipText = 'Price: {valueY.value}';
             series.strokeWidth = 2;
             series.minBulletDistance = 10;
@@ -54,6 +67,7 @@ export default {
 
             // Add legend
             this.chart.legend = new am4charts.Legend();
+            this.$emit('chartCreated', this.chart)
         }
     },
     beforeDestroy() {
@@ -63,3 +77,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.chart-container {
+    height: 200px;
+}
+</style>
