@@ -59,6 +59,7 @@ export default {
 
             // Add scrollbar
             this.chart.scrollbarX = new am4core.Scrollbar();
+            this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
 
             // Add chart title
             // this.chart.title.text = 'Historical Price Chart';
@@ -78,6 +79,6 @@ export default {
 
 <style scoped>
 .chart-container {
-    height: 200px;
+    height: 400px;
 }
 </style>

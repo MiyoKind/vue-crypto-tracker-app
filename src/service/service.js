@@ -9,8 +9,6 @@ export const mapCoinCardData = (data) => {
         priceChange: item.price_change_percentage_24h.toFixed(4)
     }))
 }
-
-
   
   // Function to calculate the maximum number of days from the current date to the date of creation of Bitcoin
  export const calculateMaximumDays = () => {

@@ -1,9 +1,13 @@
 <template>
-    <v-dialog width="800" :value="openStatus" @click:outside="$emit('closeDialog')">
+    <v-dialog scrollable width="800" :value="openStatus" @click:outside="$emit('closeDialog')">
         <v-card>
             <v-card-title>
                 <v-layout justify-space-between align-center>
-                    <p class="pa-0 mb-0 ml-2">About {{ coinDetails.id }}</p>
+                    <div class="coin-title d-flex flex-row">
+                        <img :src="coin.image" :alt="coin.name" width="35" height="35" class="mr-2">
+                        <p class="pa-0 mb-0 my-auto mr-2">About {{ coin.name }}</p>
+                        <p class="pa-0 mb-0 my-auto">{{ coin.symbol }}</p>
+                    </div>
                     <v-btn width="30" height="30" fab text @click="$emit('closeDialog')">
                         <v-icon>
                             mdi-window-close
@@ -12,6 +16,9 @@
                 </v-layout>
             </v-card-title>
             <v-container class="px-8 py-6">
+                <v-layout flex-row justify-center class="chart-title mb-4">
+                    <p class="pa-0 mb-0 font-weight-bold">Historical Price Data</p>
+                </v-layout>
                 <v-tabs fixed-tabs bg-color="indigo-darken-2">
                     <v-tab v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id">
                         {{ tab.label }}
@@ -20,8 +27,10 @@
                 <CoinDialogChart :chart-data="activeData" @chartCreated="handleChartCreated" />
             </v-container>
             <v-card-text>
-                <!--Historical price data, 24h, week, month, year, all-time-->
-                <!--Coin details-->
+                <v-container class="coin-details">
+                    
+                </v-container>
+                <!--Coin details including exchange rate-->
                 <!--Market Data-->
             </v-card-text>
         </v-card>
@@ -43,7 +52,7 @@ export default {
             type: Boolean,
             required: true
         },
-        coinDetails: {
+        coin: {
             type: Object,
             required: true
         }
@@ -69,7 +78,8 @@ export default {
             monthlyChartData: 'getMonthlyChartData',
             yearChartData: 'getYearChartData',
             overallChartData: 'getOverallChartData'
-        })
+        }),
+        ...mapGetters('coin', { coinDetails: 'getCoinDetails' })
     },
     methods: {
         ...mapActions('coinDialogData', [
@@ -79,6 +89,7 @@ export default {
             'fetchYearData',
             'fetchOverallData'
         ]),
+        ...mapActions('coin', ['fetchCoinDetails']),
         handleChartCreated(chart) {
             this.chart = chart
             this.updateChartData()
@@ -91,19 +102,19 @@ export default {
             // logic for getting data with certain period of time
             switch (this.activeTab) {
                 case 'daily':
-                    await this.fetchDailyData(this.coinDetails.id)
+                    await this.fetchDailyData(this.coin.id)
                     return this.dailyChartData
                 case 'weekly':
-                    await this.fetchWeeklyData(this.coinDetails.id)
+                    await this.fetchWeeklyData(this.coin.id)
                     return this.weeklyChartData
                 case 'monthly':
-                    await this.fetchMonthlyData(this.coinDetails.id)
+                    await this.fetchMonthlyData(this.coin.id)
                     return this.monthlyChartData
                 case 'year':
-                    await this.fetchYearData(this.coinDetails.id)
+                    await this.fetchYearData(this.coin.id)
                     return this.yearChartData
                 case 'overall':
-                    await this.fetchOverallData(this.coinDetails.id)
+                    await this.fetchOverallData(this.coin.id)
                     return this.overallChartData
                 default: return []
             }
@@ -112,7 +123,14 @@ export default {
     watch: {
         activeTab() {
             this.updateChartData()
-        }
+        },
+        openStatus: {
+            handler(newVal) {
+                if (newVal) {
+                    this.fetchCoinDetails(this.coin.id)
+                }
+            }
+        } 
     }
 }
 </script>

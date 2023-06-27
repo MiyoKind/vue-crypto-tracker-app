@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { calculateMaximumDays, extractOverallData } from '@/service/service';
 
-// let lastCalled = 0;
-// const MIN_TIME_INTERVAL = 1000; // 1 second
-
 const sleepRequest = (milliseconds, originalRequest) => {
   return new Promise((resolve) => {
     setTimeout(() => resolve(axios(originalRequest)), milliseconds)
@@ -25,7 +22,7 @@ axios.interceptors.response.use(response => {
 
 /**
  * Function fetching coin list
- * @returns { Array }
+ * @returns { Array } - Array of basic coin info
  */
 export const fetchCoinList = async () => {
   try {
@@ -40,7 +37,7 @@ export const fetchCoinList = async () => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json; charset=utf-8'
       }
     })
 
@@ -54,29 +51,25 @@ export const fetchCoinList = async () => {
 
 /**
  * Function fetching details for specific coin
- * @param { String } id 
- * @returns { Object }
+ * @param { String } id - coinId
+ * @returns { Object } - detailed information about specific coin
  */
 export const fetchCoinDetails = async (id) => {
   try {
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/coins/list/${id}`
+    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
     );
 
-    const coin = {
-      id: response.data.id,
-      name: response.data.name,
-      symbol: response.data.symbol,
-      marketCap: response.data.market_data.market_cap.usd,
-      volume: response.data.market_data.total_volume.usd,
-      circulatingSupply: response.data.market_data.circulating_supply,
-      priceCharts: response.data.market_data.sparkline_7d.price,
-    };
-
-    return coin;
+    const coin = response.data
+    return coin
   } catch (error) {
-    console.error(error);
-    throw new Error('Error fetching coin details');
+    console.error(error)
+    throw new Error('Error fetching coin details')
   }
 };
 

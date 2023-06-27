@@ -3,7 +3,7 @@
         <!--Pass another data as a coin-details prop in Dialog-->
         <CoinDialog
        :open-status="coinDialogOpenStatus"
-       :coin-details="coinData"
+       :coin="coinData"
        @closeDialog="coinDialogOpenStatus = false"
         />
         <v-card-title class="d-flex flex-row justify-space-between">

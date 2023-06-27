@@ -22,7 +22,7 @@ export default {
     ...mapGetters('coin', { coinCardData: 'getCoinCardData' }),
   },
   methods: {
-    ...mapActions('coin', ['fetchCoins', 'fetchCoinDetails']),
+    ...mapActions('coin', ['fetchCoins']),
   },
   mounted() {
     this.fetchCoins();
