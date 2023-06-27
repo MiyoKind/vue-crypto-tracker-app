@@ -16,17 +16,15 @@ export default {
     },
     data() {
         return {
-            chart: null,
-            chartUpdateTimeout: null
+            chart: null
         }
     },
     watch: {
         chartData: {
-            handler(newVal) {
-                if (Array.isArray(newVal)) {
-                    console.log(newVal);
-                    this.chart.dispose();
-                    this.createChart();
+            handler(newVal, oldVal) {
+                if (Array.isArray(newVal) && newVal !== oldVal) {
+                    this.chart.data = newVal
+                    this.chart.invalidateData()
                 }
             },
             deep: true
