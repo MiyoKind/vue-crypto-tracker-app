@@ -4,6 +4,25 @@ import { calculateMaximumDays, extractOverallData } from '@/service/service';
 // let lastCalled = 0;
 // const MIN_TIME_INTERVAL = 1000; // 1 second
 
+const sleepRequest = (milliseconds, originalRequest) => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(axios(originalRequest)), milliseconds)
+  })
+}
+
+axios.interceptors.response.use(response => {
+  return response
+}, error => {
+  const { config, response: {status} } = error
+  const originalRequest = config
+
+  if (status === 429) {
+    return sleepRequest(1000, originalRequest)
+  } else {
+    return Promise.reject(error)
+  }
+})
+
 /**
  * Function fetching coin list
  * @returns { Array }

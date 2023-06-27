@@ -111,7 +111,6 @@ export default {
     },
     watch: {
         activeTab() {
-            console.log(this.activeTab)
             this.updateChartData()
         }
     }
