@@ -5,7 +5,7 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 export default {
   name: 'NewsMarquee',
@@ -21,8 +21,8 @@ export default {
       this.containerWidth = this.$el.clientWidth;
       if (this.contentWidth > this.containerWidth) {
         this.intervalId = setInterval(() => {
-          if (this.$refs.content.style.transform === "") {
-            this.$refs.content.style.transform = "translateX(0)";
+          if (this.$refs.content.style.transform === '') {
+            this.$refs.content.style.transform = 'translateX(0)';
           }
           const currentPosition = parseInt(
             this.$refs.content.style.transform.slice(11),
@@ -30,7 +30,7 @@ export default {
           );
           const newPosition = currentPosition - 1;
           if (Math.abs(newPosition) >= this.contentWidth) {
-            this.$refs.content.style.transform = "translateX(0)";
+            this.$refs.content.style.transform = 'translateX(0)';
           } else {
             this.$refs.content.style.transform = `translateX(${newPosition}px)`;
           }
@@ -43,7 +43,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 .marquee {
   overflow: hidden;

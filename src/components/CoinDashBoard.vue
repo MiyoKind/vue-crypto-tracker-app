@@ -1,7 +1,14 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="(card, index) in coinCardData" :key="index" cols="12" sm="6" md="4" lg="3">
+      <v-col
+        v-for="(card, index) in coinCardData"
+        :key="index"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
         <CoinCard :coin-data="card" />
       </v-col>
     </v-row>
@@ -9,14 +16,14 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
-import CoinCard from './CoinCard.vue'
+import CoinCard from './CoinCard.vue';
 
 export default {
   name: 'CoinDashBoard',
   components: {
-    CoinCard
+    CoinCard,
   },
   computed: {
     ...mapGetters('coin', { coinCardData: 'getCoinCardData' }),
@@ -27,5 +34,5 @@ export default {
   mounted() {
     this.fetchCoins();
   },
-}
+};
 </script>

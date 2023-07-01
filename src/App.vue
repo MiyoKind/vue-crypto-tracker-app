@@ -1,8 +1,13 @@
 <template>
   <v-app>
-      <NewsMarquee class="mt-25">
-        <span class="news-title" v-for="newsTitle in newsTitles" :key="newsTitle">{{ newsTitle }}</span>
-      </NewsMarquee>
+    <NewsMarquee class="mt-25">
+      <span
+        class="news-title"
+        v-for="newsTitle in newsTitles"
+        :key="newsTitle"
+        >{{ newsTitle }}</span
+      >
+    </NewsMarquee>
     <!--Fix margin to avoid app-bar overlapping the first components of dashboard-->
     <v-main class="mt-15">
       <CoinDashBoard />
@@ -10,9 +15,8 @@
   </v-app>
 </template>
 
-
 <script>
-import CoinDashBoard from '@/components/CoinDashBoard'
+import CoinDashBoard from '@/components/CoinDashBoard';
 import NewsMarquee from './components/NewsMarquee.vue';
 
 import { mapGetters, mapActions } from 'vuex';
@@ -22,16 +26,16 @@ export default {
   components: {
     CoinDashBoard,
     NewsMarquee,
-},
+  },
   computed: {
-    ...mapGetters('news', { newsTitles: 'getNewsTitles' })
+    ...mapGetters('news', { newsTitles: 'getNewsTitles' }),
   },
   methods: {
-    ...mapActions('news', ['fetchNewsData'])
+    ...mapActions('news', ['fetchNewsData']),
   },
   mounted() {
     this.fetchNewsData();
-  }
+  },
 };
 </script>
 

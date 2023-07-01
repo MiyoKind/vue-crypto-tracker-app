@@ -129,10 +129,10 @@ export default {
 <style scoped lang="scss">
 /* Work with responsive */
 .coin-card-chart {
-    position: relative;
-    left: -27%;
-    width: 137%;
-    height: 119%;
+  position: relative;
+  left: -27%;
+  width: 137%;
+  height: 119%;
   .placeholder-text {
     display: flex;
     align-items: center;

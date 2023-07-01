@@ -1,5 +1,5 @@
-import { fetchCoinList, fetchCoinDetails } from '@/api/api'
-import mapCoinCardData from '@/service/service'
+import { fetchCoinList, fetchCoinDetails } from '@/api/api';
+import mapCoinCardData from '@/service/service';
 
 const state = {
   coins: [],
@@ -37,15 +37,21 @@ const actions = {
 };
 
 const getters = {
-  getCoinList: state => { return state.coins },
-  getCoinDetails: state => { return state.coin },
-  getCoinCardData: state => { return mapCoinCardData(state.coins) }
-}
+  getCoinList: (state) => {
+    return state.coins;
+  },
+  getCoinDetails: (state) => {
+    return state.coin;
+  },
+  getCoinCardData: (state) => {
+    return mapCoinCardData(state.coins);
+  },
+};
 
 export default {
   namespaced: true,
   state,
   mutations,
   actions,
-  getters
+  getters,
 };

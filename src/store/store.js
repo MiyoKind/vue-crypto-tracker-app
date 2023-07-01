@@ -12,6 +12,6 @@ export default new Vuex.Store({
   modules: {
     coin: coinModule,
     news: newsModule,
-    coinDialogData: coinDialogDataModule
+    coinDialogData: coinDialogDataModule,
   },
 });
