@@ -1,5 +1,5 @@
 <template>
-    <v-card width="344">
+    <v-card class="coin-card" width="344">
         <!--Pass another data as a coin-details prop in Dialog-->
         <CoinDialog
        :open-status="coinDialogOpenStatus"
@@ -84,4 +84,8 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.coin-card {
+    overflow: hidden;
+}
+</style>

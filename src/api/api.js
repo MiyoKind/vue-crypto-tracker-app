@@ -1,24 +1,42 @@
 import axios from 'axios';
 import { calculateMaximumDays, extractOverallData } from '@/service/service';
 
-const sleepRequest = (milliseconds, originalRequest) => {
+const apiHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Accept': 'application/json',
+  'Content-Type': 'application/json; charset=utf-8' 
+};
+
+const sleep = (milliseconds) => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(axios(originalRequest)), milliseconds)
-  })
-}
+    setTimeout(resolve, milliseconds);
+  });
+};
 
-axios.interceptors.response.use(response => {
-  return response
-}, error => {
-  const { config, response: {status} } = error
-  const originalRequest = config
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config, response } = error;
 
-  if (status === 429) {
-    return sleepRequest(1000, originalRequest)
-  } else {
-    return Promise.reject(error)
+    if (response && response.status === 429) {
+      await sleep(1000);
+      return axios(config);
+    } else {
+      return Promise.reject(error);
+    }
   }
-})
+);
+
+const fetchData = async (url, params = {}) => {
+  try {
+    const response = await axios.get(url, { params, headers: apiHeaders });
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching data from ${url}`);
+    throw new Error(error.message);
+  }
+};
+
 
 /**
  * Function fetching coin list
@@ -26,24 +44,18 @@ axios.interceptors.response.use(response => {
  */
 export const fetchCoinList = async () => {
   try {
-    const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-      params: {
-        vs_currency: 'usd',
-        order: 'market_cap_desc',
-        per_page: 100,
-        page: 1,
-        sparkline: false
-      },
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
+    const url = 'https://api.coingecko.com/api/v3/coins/markets';
+    const params = {
+      vs_currency: 'usd',
+      order: 'market_cap_desc',
+      per_page: 100,
+      page: 1,
+      sparkline: false
+    }
 
-    const coins = response.data
+    const coins = await fetchData(url, params)
     return coins
-  } catch (err) {
+  } catch (error) {
     console.error('Cannot fetch coin list')
     return []
   }
@@ -56,17 +68,24 @@ export const fetchCoinList = async () => {
  */
 export const fetchCoinDetails = async (id) => {
   try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      }
-    );
+    const coinGeckoUrl = `https://api.coingecko.com/api/v3/coins/${id}`
+    // const coinGeckoResponse = await axios.get(coinGeckoUrl, {
+    //  headers: apiHeaders
+    // })
+    // const coinGeckoData = coinGeckoResponse.data
+    const coinGeckoData = await fetchData(coinGeckoUrl)
+    // console.log(`${coinGeckoData.symbol}-${coinGeckoData.id}`)
+    
+    // const coinPaprikaUrl = `https://api.coinpaprika.com/v1/coins/${coinGeckoData.symbol}-${coinGeckoData.id}`
+    // const coinPaprikaData = await fetchData(coinPaprikaUrl)
 
-    const coin = response.data
-    return coin
+    // const whitepaper = coinPaprikaData?.whitepaper || null
+    const coin = {
+      ...coinGeckoData,
+      // whitepaper
+    }
+    
+    return coin;
   } catch (error) {
     console.error(error)
     throw new Error('Error fetching coin details')
@@ -81,17 +100,15 @@ export const fetchCoinDetails = async (id) => {
  */
 export const fetchCoinHistoricalChartData = async (coinId, days) => {
   try {
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
-      {
-        params: {
-          vs_currency: 'usd',
-          days: `${days}`
-        }
-      }
-    );
+    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`
+    const params = {
+      vs_currency: 'usd',
+      days: `${days}`
+    }
+    
+    const response = await fetchData(url, params)
 
-    const chartData = response.data.prices.map(([timeStamp, historicalPrice]) => ({
+    const chartData = response.prices.map(([timeStamp, historicalPrice]) => ({
       timeStamp,
       historicalPrice
     }));
@@ -109,7 +126,8 @@ export const fetchCoinHistoricalChartData = async (coinId, days) => {
  */
 export const fetchNews = async () => {
   try {
-    const response = await axios.get(`https://min-api.cryptocompare.com/data/news/?api_key=${ process.env.CRYPTOCOMPARE_API_KEY }`)
+    const apiKey = process.env.CRYPTOCOMPARE_API_KEY
+    const response = await axios.get(`https://min-api.cryptocompare.com/data/news/?api_key=${ apiKey }`)
     const news = response.data
     return news
   } catch (error) {
