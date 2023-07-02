@@ -1,15 +1,23 @@
 <template>
   <v-app>
-    <NewsMarquee class="mt-25">
-      <span
-        class="news-title"
-        v-for="newsTitle in newsTitles"
-        :key="newsTitle"
-        >{{ newsTitle }}</span
-      >
-    </NewsMarquee>
+    <v-app-bar fixed :extension-height="25">
+      <v-app-bar-nav-icon />
+      <v-app-bar-title> Crypto Tracker App </v-app-bar-title>
+      <template v-slot:extension>
+        <div id="news-marquee-container">
+          <NewsMarquee>
+            <span
+              class="news-title"
+              v-for="newsTitle in newsTitles"
+              :key="newsTitle"
+              >{{ newsTitle }}</span
+            >
+          </NewsMarquee>
+        </div>
+      </template>
+    </v-app-bar>
     <!--Fix margin to avoid app-bar overlapping the first components of dashboard-->
-    <v-main class="mt-15">
+    <v-main class="mt-appbar">
       <CoinDashBoard />
     </v-main>
   </v-app>
@@ -40,8 +48,15 @@ export default {
 </script>
 
 <style scoped>
+#news-marquee-container {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+}
 .mt-appbar {
-  margin-top: 56px;
+  margin-top: 90px;
 }
 
 .news-title {
