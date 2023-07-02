@@ -16,7 +16,6 @@
         </div>
       </template>
     </v-app-bar>
-    <!--Fix margin to avoid app-bar overlapping the first components of dashboard-->
     <v-main class="mt-appbar">
       <CoinDashBoard />
     </v-main>
