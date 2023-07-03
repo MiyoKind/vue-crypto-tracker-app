@@ -1,5 +1,5 @@
 <template>
-  <v-card class="coin-card" width="344">
+  <v-card class="coin-card" width="344" v-show="visible">
     <!--Pass another data as a coin-details prop in Dialog-->
     <CoinDialog
       :open-status="coinDialogOpenStatus"
@@ -79,6 +79,10 @@ export default {
       type: Object,
       required: true,
     },
+    visible: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

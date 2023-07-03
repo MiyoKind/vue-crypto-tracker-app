@@ -3,7 +3,7 @@
     <v-app-bar fixed :extension-height="25">
       <v-app-bar-nav-icon />
       <v-app-bar-title> Crypto Tracker App </v-app-bar-title>
-      <template v-slot:extension>
+      <template #extension>
         <div id="news-marquee-container">
           <NewsMarquee>
             <span

@@ -54,6 +54,7 @@ export const fetchCoinList = async () => {
     }
 
     const coins = await fetchData(url, params)
+
     return coins
   } catch (error) {
     console.error('Cannot fetch coin list')
