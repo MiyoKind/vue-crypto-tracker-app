@@ -5,6 +5,7 @@
         <v-autocomplete
           v-model="searchText"
           :items="coinCardData"
+          :loading="isLoading"
           item-text="name"
           auto-select-first
           chips
@@ -73,7 +74,7 @@
               class="d-flex flex-row justify-center align-center"
             >
               <v-icon> mdi-filter </v-icon>
-              <p class="pa-0 mb-0 mx-2">Filter</p>
+              <p class="pa-0 mb-0 mx-2">Filters</p>
             </v-btn>
           </template>
           <v-list>
@@ -82,13 +83,28 @@
             <!--</v-list-item>-->
             <v-list-item v-if="isFilterSelected" @click="resetFilters">
               <v-list-item-title>Reset filters</v-list-item-title>
+              <v-list-item-action>
+                <v-icon> mdi-filter-off </v-icon>
+              </v-list-item-action>
             </v-list-item>
             <v-list-item
               v-for="filter in filterOptions"
               :key="filter.value"
               @click="setFilter(filter.value)"
             >
-              <v-list-item-title>{{ filter.label }}</v-list-item-title>
+              <v-tooltip left>
+                <template #activator="{ on }">
+                  <v-list-item-title v-on="on">{{
+                    truncateFilterLabel(filter.label)
+                  }}</v-list-item-title>
+                </template>
+                <span>{{ filter.label }}</span>
+              </v-tooltip>
+              <v-list-item-action>
+                <v-icon>
+                  {{ filter.icon }}
+                </v-icon>
+              </v-list-item-action>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -127,6 +143,7 @@ export default {
       selectedFilter: null,
       // Text entered by user for searching
       searchText: '',
+      isLoading: false,
     };
   },
   computed: {
@@ -141,8 +158,10 @@ export default {
       if (this.selectedFilter) {
         filteredData.sort((a, b) => {
           switch (this.selectedFilter) {
-            case 'volume':
+            case 'volumeAsc':
               return a.volume - b.volume;
+            case 'volumeDesc':
+              return b.volume - a.volume;
             case 'priceAsc':
               return a.price - b.price;
             case 'priceDesc':
@@ -164,7 +183,9 @@ export default {
 
       const regex = new RegExp(this.searchText.join('|'), 'gi');
 
-      return this.filteredCoinCardData.filter(({ id, name }) => regex.test(id) || regex.test(name));
+      return this.filteredCoinCardData.filter(
+        ({ id, name }) => regex.test(id) || regex.test(name)
+      );
     },
     isFilterSelected() {
       return this.selectedFilter !== null;
@@ -172,10 +193,31 @@ export default {
     // Add filter icons for better UX
     filterOptions() {
       return [
-        { label: 'Sort by volume', value: 'volume' },
-        { label: 'Sort by price ascending', value: 'priceAsc' },
-        { label: 'Sort by price descending', value: 'priceDesc' },
-        { label: 'Sort by alphabet', value: 'alphabet' },
+        {
+          label: 'Sort by volume ascending',
+          value: 'volumeAsc',
+          icon: 'mdi-sort-descending',
+        },
+        {
+          label: 'Sort by volume descending',
+          value: 'volumeDesc',
+          icon: 'mdi-sort-ascending',
+        },
+        {
+          label: 'Sort by price ascending',
+          value: 'priceAsc',
+          icon: 'mdi-trending-up',
+        },
+        {
+          label: 'Sort by price descending',
+          value: 'priceDesc',
+          icon: 'mdi-trending-down',
+        },
+        {
+          label: 'Sort by alphabet',
+          value: 'alphabet',
+          icon: 'mdi-order-alphabetical-ascending',
+        },
       ];
     },
   },
@@ -192,9 +234,27 @@ export default {
       this.sortBy = filter;
       this.selectedFilter = filter;
     },
+    truncateFilterLabel(label) {
+      const maxLength = 12;
+      if (label.length <= maxLength) {
+        return label;
+      }
+
+      return `${label.slice(0, maxLength)}...`;
+    },
   },
   mounted() {
     this.fetchCoins();
+  },
+  watch: {
+    searchText(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.isLoading = newVal.length > 0;
+      }
+    },
+    filteredAndSearchedCoinCardData() {
+      this.isLoading = false;
+    },
   },
 };
 </script>
