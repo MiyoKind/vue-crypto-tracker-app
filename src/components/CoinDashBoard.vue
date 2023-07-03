@@ -121,12 +121,14 @@ export default {
   },
   data() {
     return {
+      // Sorting option selected by user
       sortBy: null,
+      // Filter option selected by user
       selectedFilter: null,
+      // Text entered by user for searching
       searchText: '',
     };
   },
-  // add comments
   computed: {
     ...mapGetters('coin', { coinCardData: 'getCoinCardData' }),
     filteredCoinCardData() {
