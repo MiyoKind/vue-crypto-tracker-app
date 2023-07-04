@@ -1,5 +1,4 @@
 import { fetchCoinHistoricalChartData } from '@/api/api';
-import { fetchCoinOverallChartData } from '@/service/service';
 
 const state = {
   dailyChartData: [],
@@ -60,10 +59,9 @@ const actions = {
       // Handle error case
     }
   },
-  async fetchOverallChartData({ commit }, coinId) {
+  async fetchOverallData({ commit }, coinId) {
     try {
-      // Change days later
-      const overallChartData = await fetchCoinOverallChartData(coinId);
+      const overallChartData = await fetchCoinHistoricalChartData(coinId, 'max');
       commit('setOverallChartData', overallChartData);
     } catch (error) {
       // Handle error case

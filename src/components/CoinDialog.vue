@@ -75,11 +75,11 @@ export default {
     return {
       activeTab: 'daily',
       tabs: [
-        { id: 'daily', label: 'Daily Data' },
-        { id: 'weekly', label: 'Weekly Data' },
-        { id: 'monthly', label: 'Monthly Data' },
-        { id: 'year', label: 'Year Data' },
-        { id: 'overall', label: 'Overall Data' },
+        { id: 'daily', label: 'Day' },
+        { id: 'weekly', label: 'Week' },
+        { id: 'monthly', label: 'Month' },
+        { id: 'year', label: 'Year' },
+        { id: 'overall', label: 'Max' },
       ],
       activeData: [],
       chart: null,

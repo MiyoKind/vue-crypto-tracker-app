@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { calculateMaximumDays, extractOverallData } from '@/service/service';
 
 const apiHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,12 +54,32 @@ export const fetchCoinList = async () => {
 
     const coins = await fetchData(url, params)
 
+    const trendingCoins = await fetchTrendingCoins();
+
+    const trendingCoinsIds = trendingCoins.map((trendingCoin) => trendingCoin.item.id);
+
+    coins.forEach((coin) => {
+      coin.isTrending = trendingCoinsIds.includes(coin.id);
+    });
+
     return coins
   } catch (error) {
     console.error('Cannot fetch coin list')
     return []
   }
 }
+
+export const fetchTrendingCoins = async () => {
+  try {
+    const url = 'https://api.coingecko.com/api/v3/search/trending';
+    const trendingCoins = await fetchData(url);
+    return trendingCoins.coins || [];
+  } catch (error) {
+    console.error('Cannot fetch trending coins');
+    return [];
+  }
+}
+
 
 /**
  * Function fetching details for specific coin
@@ -70,20 +89,10 @@ export const fetchCoinList = async () => {
 export const fetchCoinDetails = async (id) => {
   try {
     const coinGeckoUrl = `https://api.coingecko.com/api/v3/coins/${id}`
-    // const coinGeckoResponse = await axios.get(coinGeckoUrl, {
-    //  headers: apiHeaders
-    // })
-    // const coinGeckoData = coinGeckoResponse.data
     const coinGeckoData = await fetchData(coinGeckoUrl)
-    // console.log(`${coinGeckoData.symbol}-${coinGeckoData.id}`)
-    
-    // const coinPaprikaUrl = `https://api.coinpaprika.com/v1/coins/${coinGeckoData.symbol}-${coinGeckoData.id}`
-    // const coinPaprikaData = await fetchData(coinPaprikaUrl)
 
-    // const whitepaper = coinPaprikaData?.whitepaper || null
     const coin = {
       ...coinGeckoData,
-      // whitepaper
     }
     
     return coin;
@@ -136,16 +145,3 @@ export const fetchNews = async () => {
     return []
   }
 }
-
-export const fetchCoinOverallChartData = async (coinId) => {
-  try {
-    const maximumDays = calculateMaximumDays(); // Calculate the maximum number of days
-    const chartData = fetchCoinHistoricalChartData(coinId, maximumDays);
-    const overallData = extractOverallData(chartData);
-
-    return overallData;
-  } catch (error) {
-    console.log('Cannot fetch coin overall data');
-    return [];
-  }
-};
