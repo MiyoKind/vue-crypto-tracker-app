@@ -252,7 +252,7 @@ export default {
         this.isLoading = newVal.length > 0;
       }
     },
-    async filteredAndSearchedCoinCardData() {
+    filteredAndSearchedCoinCardData() {
       this.isLoading = false;
     },
   },
