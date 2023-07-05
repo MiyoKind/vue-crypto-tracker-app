@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container ref="dashboardContainer">
     <v-row>
       <v-col cols="10">
         <v-autocomplete
@@ -144,6 +144,7 @@ export default {
       // Text entered by user for searching
       searchText: '',
       isLoading: false,
+      currentPage: 1,
     };
   },
   computed: {
@@ -242,9 +243,24 @@ export default {
 
       return `${label.slice(0, maxLength)}...`;
     },
+    handleScroll() {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop =
+        document.documentElement.scrollTop || document.body.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight) {
+        this.currentPage++;
+        this.fetchCoins(this.currentPage);
+      }
+    },
   },
   mounted() {
-    this.fetchCoins();
+    this.fetchCoins(this.currentPage);
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
   watch: {
     searchText(newVal, oldVal) {

@@ -16,10 +16,11 @@ const mutations = {
 };
 
 const actions = {
-  async fetchCoins({ commit }) {
+  async fetchCoins({ commit, state }, page) {
     try {
-      const coins = await fetchCoinList();
-      commit('setCoins', coins);
+      const coins = await fetchCoinList(page);
+      const updatedCoins = [...state.coins, ...coins]
+      commit('setCoins', updatedCoins);
     } catch (error) {
       console.error(error);
       // Handle the error case
